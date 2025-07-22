@@ -1,12 +1,24 @@
-#Okay so it seems that we may not require to retrieve our data using yfinance
-from ib_insync import *
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import pandas as pd
-ib = IB()
-ib.connect('127.0.0.1', port = 7497, clientId=1)
-contract = Stock('SVXY', 'SMART', 'USD')
-bars = ib.reqHistoricalData(contract, endDateTime='', durationStr='1 Y', 
-                            barSizeSetting='1 day', whatToShow='ADJUSTED_LAST', 
-                            useRTH=True)
-df = util.df(bars)
-print(df)
-ib.disconnect()
+import yfinance as yf 
+from matplotlib.ticker import FixedFormatter, FixedLocator, NullLocator
+data = yf.download('SVXY', start = pd.Timestamp(2011,10,1), end = pd.Timestamp.now())
+print(data)
+
+#Visualization
+fig, ax = plt.subplots(figsize = (16,8), dpi = 100)
+ax.plot(data.index,data['Close'])
+
+ax.set_xlabel('Date', fontsize = 14)
+ax.set_ylabel('Value', fontsize = 14)
+ax.set_yscale('log')
+y_ticks = [10,20,30,40,50,70,100,150,200]
+ax.yaxis.set_major_locator(FixedLocator(y_ticks))
+ax.yaxis.set_major_formatter(FixedFormatter(y_ticks))
+ax.yaxis.set_minor_locator(NullLocator())
+ax.xaxis.set_major_locator(mdates.YearLocator(1))
+ax.xaxis.set_minor_locator(mdates.MonthLocator(interval = 2))
+plt.title('SVXY Index Log Figure', fontsize = 14)
+plt.tight_layout()
+plt.show(),
