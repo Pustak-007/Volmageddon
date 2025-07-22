@@ -21,4 +21,4 @@ ax.xaxis.set_major_locator(mdates.YearLocator(1))
 ax.xaxis.set_minor_locator(mdates.MonthLocator(interval = 2))
 plt.title('SVXY Index Log Figure', fontsize = 14)
 plt.tight_layout()
-plt.show(),
+plt.show()
