@@ -50,7 +50,7 @@ def Create_SVXY_Curve(SVXY_data):
     # this is the one which works consistently
     y_ticks = [10, 20, 30, 40, 50, 70, 100, 150, 200]
     ax.yaxis.set_major_locator(FixedLocator(y_ticks))
-    ax.yaxis.set_major_formatter(FixedFormatter([str(tick) for tick in y_ticks]))
+    ax.yaxis.set_major_formatter(FixedFormatter(y_ticks))
     ax.yaxis.set_minor_locator(NullLocator())
 
     # X-axis formatting
