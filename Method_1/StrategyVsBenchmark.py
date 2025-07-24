@@ -6,14 +6,15 @@ import pandas as pd
 from matplotlib.ticker import FixedFormatter, FixedLocator, NullLocator
 import matplotlib.dates as mdates
 from functools import partial
+if __name__ == "__main__":
+    pd.set_option('display.min_rows', 200)
 initial_capital = 1 #Standard practice to make returns comparative and readable
 
 #Creation of SVXY Unit Equity Curve Data
 def Create_UnitDollar_Equity_Curve(data):
-    equity_curve = pd.DataFrame()
-    equity_curve.index = data.index
-    equity_curve['PnL (%)'] = (data['Close'].pct_change() * 100).fillna(0)
-    equity_curve['Growth Factor'] = 1 + (equity_curve['PnL (%)'])/100
+    equity_curve = pd.DataFrame(index = data.index)
+    equity_curve['Daily PnL(%)'] = (data['Close'].pct_change() * 100).fillna(0)
+    equity_curve['Growth Factor'] = 1 + (equity_curve['Daily PnL(%)'])/100
     equity_curve['Equity'] = initial_capital * equity_curve['Growth Factor'].cumprod()
     return equity_curve
 
