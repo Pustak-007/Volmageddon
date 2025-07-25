@@ -5,9 +5,9 @@ import yfinance as yf
 from matplotlib.ticker import FixedFormatter, FixedLocator, NullLocator
 start_date = pd.Timestamp(2011,10,4)
 end_date = pd.Timestamp(2024,12,31)
-SVXY_data = yf.download('SVXY', start=start_date, end=end_date)
-print(SVXY_data)
-
+daily_index = pd.date_range(start_date, end_date)
+SVXY_data = yf.download('SVXY', start=start_date, end=end_date + pd.Timedelta(days = 1))
+SVXY_data = SVXY_data.reindex(index = daily_index)
 # Visualization
 def Create_SVXY_Curve():
     fig, ax = plt.subplots(figsize=(16,8), dpi=100)
@@ -66,6 +66,5 @@ def Create_SVXY_Curve():
     plt.tight_layout()
     plt.legend(fontsize=12)
     plt.show()
-
 if __name__ == "__main__":
-    Create_SVXY_Curve()
+    print(SVXY_data.loc[pd.Timestamp(2024,12,30), ('Close', 'SVXY')])
