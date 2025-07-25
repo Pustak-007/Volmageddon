@@ -35,7 +35,7 @@ def Plot_UnitDollar_SVXYvsSPY_Equity_Curve():
     ax.grid(True, alpha = 0.3)
     ax.set_xlabel("Date", fontsize = 14)
     ax.set_ylabel("Equity Value", fontsize = 14)
-    ax.axvline(pd.Timestamp(2018,1,31), color = 'g', linestyle = '--')
+    #ax.axvline(pd.Timestamp(2018,1,31), color = 'g', linestyle = '--')
     ax.set_yscale('log')
     #manual y_ticks
     y_ticks = [1,2,5,10,15,20,25]

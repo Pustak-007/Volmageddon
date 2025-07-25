@@ -1,13 +1,26 @@
-#This is a test for the use of iBKR api and ib_insync library
-
 from ib_insync import *
-ib = IB()
-ib.connect('127.0.0.1', 7497, clientId = 1)
-contract = Stock('AAPL', 'SMART', 'USD')
-bars = ib.reqHistoricalData(contract, durationStr='1 Y', endDateTime='', whatToShow='ADJUSTED_LAST',
-                              barSizeSetting='1 day', useRTH=True)
-df = util.df(bars)
-df.set_index(df['date'], inplace = True)
-df.drop('date', axis = 1, inplace = True)
-print(df)
 
+# Initialize the IB client
+ib = IB()
+ib.connect('127.0.0.1', 7497, clientId=12)
+
+# Define the underlying contract (NVIDIA stock)
+underlying = Stock('NVDA', 'SMART', 'USD')
+ib.qualifyContracts(underlying)  # Ensures the contract is fully specified
+
+# Request option chain parameters
+option_chains = ib.reqSecDefOptParams(
+    underlying.symbol, '', underlying.secType, underlying.conId
+)
+
+# Process the results
+for chain in option_chains:
+    print(f"Exchange: {chain.exchange}")
+    print(f"Underlying ConId: {chain.underlyingConId}")
+    print(f"Trading Class: {chain.tradingClass}")
+    print(f"Multiplier: {chain.multiplier}")
+    print(f"Expirations: {chain.expirations}")
+    print(f"Strikes: {chain.strikes}")
+    print('-' * 50)
+
+ib.disconnect()
