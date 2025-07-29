@@ -11,7 +11,7 @@ SVXY_data = SVXY_data.reindex(index = daily_index)
 # Visualization
 def Create_SVXY_Curve():
     fig, ax = plt.subplots(figsize=(16,8), dpi=100)
-    ax.plot(SVXY_data.index, SVXY_data['Close'], label='SVXY', linewidth=1.5, color='blue')
+    ax.plot(SVXY_data.index, SVXY_data['Close'].ffill(), label='SVXY', linewidth=1.5, color='blue')
     ax.set_xlabel('Date', fontsize=14)
     ax.set_ylabel('Value', fontsize=14)
     ax.set_yscale('log')
@@ -67,4 +67,4 @@ def Create_SVXY_Curve():
     plt.legend(fontsize=12)
     plt.show()
 if __name__ == "__main__":
-    print(SVXY_data.loc[pd.Timestamp(2024,12,30), ('Close', 'SVXY')])
+    Create_SVXY_Curve()

@@ -1,26 +1,23 @@
 from ib_insync import *
-
-# Initialize the IB client
+import matplotlib.pyplot as plt 
+import pandas as pd
 ib = IB()
-ib.connect('127.0.0.1', 7497, clientId=12)
-
-# Define the underlying contract (NVIDIA stock)
-underlying = Stock('NVDA', 'SMART', 'USD')
-ib.qualifyContracts(underlying)  # Ensures the contract is fully specified
-
-# Request option chain parameters
-option_chains = ib.reqSecDefOptParams(
-    underlying.symbol, '', underlying.secType, underlying.conId
+ib.connect('127.0.0.1', 7497, clientId=1)
+contract = Option('AAPL', '20250829', 210, 'C', exchange= 'SMART')
+end_date = pd.Timestamp(2025,7,25).strftime("%Y%m%d %H:%M:%S")
+bars = ib.reqHistoricalData(
+    contract,
+    endDateTime=end_date,
+    durationStr='1 M',
+    barSizeSetting='1 hour',
+    whatToShow='TRADES',
+    useRTH=True
 )
-
-# Process the results
-for chain in option_chains:
-    print(f"Exchange: {chain.exchange}")
-    print(f"Underlying ConId: {chain.underlyingConId}")
-    print(f"Trading Class: {chain.tradingClass}")
-    print(f"Multiplier: {chain.multiplier}")
-    print(f"Expirations: {chain.expirations}")
-    print(f"Strikes: {chain.strikes}")
-    print('-' * 50)
-
-ib.disconnect()
+df = util.df(bars)
+df.index = df['date']
+df.drop('date', axis = 1, inplace = True)
+print(df)
+x = df.index
+y = df['close']
+plt.plot(x,y, color = 'blue', linewidth = 1.3)
+plt.show()

@@ -37,6 +37,7 @@ def Plot_UnitDollar_SVXYvsSPY_Equity_Curve():
     ax.set_ylabel("Equity Value", fontsize = 14)
     #ax.axvline(pd.Timestamp(2018,1,31), color = 'g', linestyle = '--')
     ax.set_yscale('log')
+
     #manual y_ticks
     y_ticks = [1,2,5,10,15,20,25]
     ax.yaxis.set_major_locator(FixedLocator(y_ticks))
@@ -47,6 +48,12 @@ def Plot_UnitDollar_SVXYvsSPY_Equity_Curve():
     ax.xaxis.set_major_locator(mdates.YearLocator(1))
     ax.xaxis.set_minor_locator(mdates.MonthLocator(interval=2))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+    ax.axhline(y = 1, color = 'gray', linestyle = ':')
+
+    #Breakeven Pointer
+    ax.annotate("Breakeven Point", xy = (pd.Timestamp(2024,1,1), 1),
+                xytext = (pd.Timestamp(2024,1,1), 1.7), fontsize = 12, color = 'black',
+                ha = 'center', arrowprops=dict(facecolor = 'gray', arrowstyle = '-|>'))
 
     ax.legend()
     plt.title("SVXY Unit Equity Return vs SPY Unit Equity Return (Log Scale)", fontsize = 16, fontweight = 'bold')

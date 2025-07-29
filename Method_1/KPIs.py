@@ -7,21 +7,26 @@ from SPY_data import SPY_data
 from StrategyVsBenchmark import SVXY_Unit_Equity_Curve, SPY_Unit_Equity_Curve
 from USTY3MO import USTY3MO
 from Drawdown import Calculate_Drawdown, Calculate_Max_Drawdown_Pct
+
 def number_of_years(end_date, begin_date):
     b_date = pd.to_datetime(begin_date)
     e_date = pd.to_datetime(end_date)
     if e_date < b_date:
         raise ValueError ("Make sure you enter end_date first and begin_date second.")
     return ((e_date-b_date).days)/365.25
+
 period_list = {'All' : (pd.Timestamp(2011,10,4), pd.Timestamp(2024,12,31)),
                'Golden Era' : (pd.Timestamp(2011,10,5), pd.Timestamp(2018,1,31)),
                'Volmageddon' : (pd.Timestamp(2018,2,1),pd.Timestamp(2018,2,28)),
                'Post-Volmageddon/Pre-COVID' : (pd.Timestamp(2018,3,1), pd.Timestamp(2020,1,31)),
                'COVID-19':(pd.Timestamp(2020,2,1), pd.Timestamp(2020,4,30)),
                'Post-COVID': (pd.Timestamp(2020,5,1), pd.Timestamp(2024,12,31))}
+
 def give_KPIs(period, yahoo_data, unit_equity_curve):
     if period not in period_list:
         raise KeyError ("The given period is not in the period list")
+    if period == "Volmageddon":
+        raise KeyError("Annualized KPIs not applicable for Volmageddon - it was a short event")
     period_begin_date = period_list[period][0]
     period_end_date = period_list[period][1]
     def Calculate_CAGR(period):
@@ -65,9 +70,36 @@ def give_KPIs(period, yahoo_data, unit_equity_curve):
     KPIs['Max Drawdown(%)'] = Calculate_Max_Drawdown(period)
     KPIs['Skewness'] = Calculate_Skewness(period)
     return KPIs
+
+def give_Volmageddon_KPIs(yahoo_data, unit_equity_curve, period = "Volmageddon"):
+    if (yahoo_data != SVXY_data and yahoo_data!= SPY_data) or (unit_equity_curve!= SVXY_Unit_Equity_Curve or unit_equity_curve!= SPY_Unit_Equity_Curve):
+        raise KeyError ('Data not accessible')
+    period_begin_date = period_list[period][0]
+    period_end_date = period_list[period][1]
+    #calculate total cumulative return for the event 
+    # -likely will be a large negative number close to 100
+    def calculate_total_return():
+        end_value = yahoo_data.loc[period_end_date, ('Close', 'SVXY')]
+        begin_value = yahoo_data.loc[period_begin_date, ('Close', 'SVXY')]
+        total_return_in_pct = (end_value - begin_value)/begin_value * 100
+        return total_return_in_pct
+    def calculate_daily_volatility():
+        daily_volatility = unit_equity_curve.loc[period_begin_date:period_end_date,'Daily PnL(%)'].std()
+        return daily_volatility
+    def calculate_maximum_drawdown():
+        my_data = yahoo_data.loc[period_begin_date:period_end_date]
+        max_drawdown_pct = Calculate_Max_Drawdown_Pct(data = my_data)
+        return max_drawdown_pct
+    KPIs = pd.DataFrame()
+    KPIs.index = ['Volmageddon']
+    KPIs['Cumulative Return (%)'] = calculate_total_return()
+    KPIs['Daily Volatility (%)'] = calculate_daily_volatility()
+    KPIs['Maximmum Drawdown(%)'] = calculate_maximum_drawdown()
+    return KPIs
+
 if __name__ == "__main__":
-    print(give_KPIs(period = 'Golden Era', yahoo_data=SVXY_data, unit_equity_curve=SVXY_Unit_Equity_Curve))
-    print(give_KPIs(period = 'Post-Volmageddon/Pre-COVID', yahoo_data=SPY_data, unit_equity_curve=SPY_Unit_Equity_Curve))
+    print(give_KPIs(period = 'Volmageddon', yahoo_data=SVXY_data, unit_equity_curve=SVXY_Unit_Equity_Curve))
+    print(give_KPIs(period = 'Volmageddon', yahoo_data=SPY_data, unit_equity_curve=SPY_Unit_Equity_Curve))
  
 
 
