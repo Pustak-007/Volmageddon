@@ -1,14 +1,14 @@
 #⚠️⚠️This module is suitable for unit testing but not suitable for
 # -- incorporating into the backtest - primarily due to the number of text messages involved.
 
-
+#Think of last_trade_date as the actual expiration date and exdate as the legal expiration date
 import wrds
 import pandas as pd
 db = wrds.Connection()
 if __name__ == "__main__":
     pd.set_option('display.min_rows', 400)
-
-test_date = pd.Timestamp(2012,1,5)
+valid_trading_dates = set(pd.to_datetime(pd.read_csv("/Users/pustak/Desktop/Volmageddon/Local_Data/dinstinct_trading_dates.csv")['Dates']))
+test_date = pd.Timestamp(2012,1,7)
 #I have given the function - for SPY it works, and it will mostly work for other companies
 # as well, but always better to have one glance at the entire dataframe (row not limited to 1)
 # to understand it, better to take a look at the output of secid_info function first just for assurance
@@ -62,43 +62,46 @@ def Full_Option_Chain(ticker, date) -> pd.DataFrame:
 
 #Function for the options whose expiration is such that there is no gamma risk and
 # --time horizon for profit realization is also feasible
-def Rel_Option_Chain(ticker, date) -> pd.DataFrame:
-    underlying_secid = secid_of(ticker)
-    target_date = date.date()
-    relevant_year = target_date.year
-    print (f"\n Retrieving the 30-45 day expiration range option_chain data for {ticker} on {target_date} ({weekday_dict[target_date.weekday()]}), it may take some seconds ...")
-    option_chain_query = f"""
-    select secid, date, exdate, 
-    case when extract(dow from exdate) = 6 then exdate - interval '1 day' else exdate
-    end as last_trade_date,
-    cp_flag, strike_price/1000 as strike_price, best_bid, best_offer, volume, impl_volatility, delta, gamma, vega, theta
-    from optionm.opprcd{relevant_year}
-    where secid = {underlying_secid} and date = '{target_date}'
-    and exdate between (date '{target_date}' + interval '30 days') and (date '{target_date}' + interval '45 days')"""
-    option_chain_data = db.raw_sql(option_chain_query)
-    option_chain_data_refined = option_chain_data[option_chain_data['impl_volatility']!='<NA>']
-    if option_chain_data_refined.empty:
-        if not Full_Option_Chain(ticker,date).empty:
-            print(f"\n It seems that on {target_date} ({weekday_dict[target_date.weekday()]}), within the tight window of 30-45 day expiration range we can't find any tradable options, let's expand the window to 30-60 expiration range")
-            print (f"\n Retrieving the 30-60 day expiration range option_chain data for {ticker} on {target_date} ({weekday_dict[target_date.weekday()]}), it may take some seconds ...")
-            option_chain_query = f"""
-            select secid, date, exdate,
-            case when extract(dow from exdate) = 6 then exdate - interval '1 day' else exdate
-            end as last_trade_date,
-            cp_flag, strike_price/1000 as strike_price, best_bid, best_offer, volume, impl_volatility, delta, gamma, vega, theta
-            from optionm.opprcd{relevant_year}
-            where secid = {underlying_secid} and date = '{target_date}'
-            and exdate between (date '{target_date}' + interval '30 days') and (date '{target_date}' + interval '60 days')"""
-            option_chain_data = db.raw_sql(option_chain_query)
-            option_chain_data_refined = option_chain_data[option_chain_data['impl_volatility']!='<NA>']
-            if option_chain_data_refined.empty:
-                raise ValueError(' It failed, the logic of expanding window manually is not comprehensive enough to work in every case!')
-        else:
-            # This block will only be executed if both the full_option_chain and refined_option_chain are empty
-            # -- which indicates that there was no trading activity on this day.
-            print("\n Oops! It seems that the given day was not a valid trading day, retrieving data for the next day:")
-            print('-' * 100)
-    return option_chain_data_refined
+def Rel_Option_Chain(ticker: str , date: pd.Timestamp) -> pd.DataFrame:
+    target_date = date
+    relevant_year = date.year
+    required_options = pd.DataFrame()
+    print("\n Finding the most feasible option expiration date to short ... ")
+    secid_query = f"""
+        select secid, cusip, effect_date, issuer, issue
+        from optionm.secnmd
+        where ticker = '{ticker}'
+        order by effect_date desc limit 1
+    """
+    info = db.raw_sql(secid_query)
+    underlying_secid = info['secid'].iloc[0]
+
+    event_date = date + pd.Timedelta(days=45)
+    best_exdate_query = f"""
+        select exdate from optionm.opprcd{relevant_year} 
+        where secid = {underlying_secid} and date = '{date}' 
+        order by abs(exdate - date '{event_date}') limit 2
+    """
+    best_exdate_info = db.raw_sql(best_exdate_query)
+    if not best_exdate_info.empty:
+        best_exdate = pd.Timestamp(best_exdate_info['exdate'].iloc[0])
+        display_best_date = best_exdate - pd.Timedelta(days = 1) if best_exdate.weekday() == 5 else best_exdate
+        print(f"\n The best valid expiration date seems to be {display_best_date.date()}")
+        print(f"\n Retrieving the option chain data for {ticker} on {target_date.date()}({weekday_dict[target_date.weekday()]}) with expiration day on {display_best_date.date()}({weekday_dict[display_best_date.weekday()]}) , it may take some seconds .. ")
+        required_options_query = f"""
+        select secid, date, exdate, 
+        case when extract(dow from exdate) = 6 then exdate - interval '1 day' else exdate
+        end as last_trade_date,
+        cp_flag, strike_price/1000 as strike_price, best_bid, best_offer, volume, impl_volatility, delta, gamma, vega, theta
+        from optionm.opprcd{relevant_year}
+        where secid = {underlying_secid} and date = '{target_date}' and exdate = '{best_exdate}'
+        """
+        required_options = db.raw_sql(required_options_query)
+        required_options = required_options[required_options['impl_volatility'].notna()]
+    else:
+        print(f"\n Opps! Given Date : {target_date.date()}({weekday_dict[target_date.weekday()]}) seems not to be a valid trading day, here is the information for the next valid day:")
+    return required_options
+
 
 #This function only to be used for first trading day of the month, I may 
 # --impose this constraint later on.
@@ -115,6 +118,8 @@ def Rel_Options(ticker, date) -> pd.DataFrame:
     #index of row with delta value closest to -0.25
     closest_min_delta_index = (rel_chain['delta'] - neg_delta_target).abs().idxmin()
     rel_options_df = pd.concat([rel_chain.loc[[closest_pos_delta_index]], rel_chain.loc[[closest_min_delta_index]]], ignore_index=True)
+    if rel_options_df['last_trade_date'].iloc[0] != rel_options_df['last_trade_date'].iloc[1]:
+        raise ValueError('Same expiration date constraint got violated!')
     return rel_options_df
 
 #for testing
