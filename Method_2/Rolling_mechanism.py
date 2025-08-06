@@ -9,7 +9,6 @@ big_dataframe = pd.DataFrame()
 ticker = 'SPY' 
 beginning_date = pd.Timestamp(2012,1,1)
 ending_date = pd.Timestamp(2023,1,10)
-start_time = time.time()
 def rolling_mechanism_test_df(ticker = ticker, beginning_date = beginning_date, ending_date = ending_date):
     from one_month_test import underlying_closing_price_at_exp_list, underlying_closing_price_at_open_list, call_strike_list, put_strike_list, total_premium_list, total_profit_list, total_payout_list
     from option_chain_func import list_of_relevant_valid_expiration_dates
@@ -45,8 +44,9 @@ def rolling_mechanims_test_list(ticker = ticker, beginning_date = beginning_date
     profit_list = [PnL_of(ticker, date) for date in rebalancing_days]
     converted_list = [float(x) for x in profit_list]
     return converted_list
-end_time = time.time()
+start_time = time.time()
 print(rolling_mechanism_test_df())
+end_time = time.time()
 #print(rolling_mechanims_test_list())
 print(f"Execution time: {end_time - start_time}")
 
