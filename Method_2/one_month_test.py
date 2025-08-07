@@ -3,18 +3,21 @@ import random
 import pandas as pd 
 from option_chain_func import Rel_Options, test_date
 date_range = pd.date_range(pd.Timestamp(2012,1,1), pd.Timestamp(2023,8,1))
-test_date =  pd.Timestamp(2014,3,3)#random.choice(date_range)
+test_date =  pd.Timestamp(2020,10,1)#random.choice(date_range)
 db = wrds.Connection()
-closing_price_at_open_list = list()
-closing_price_at_exp_list = list()
+underlying_closing_price_at_open_list = list()
+underlying_closing_price_at_exp_list = list()
 call_strike_list = list()
 put_strike_list = list()
 total_profit_list = list()
+total_premium_list = list()
+total_payout_list = list()
 def PnL_of(ticker = 'SPY', date = test_date):
     df = Rel_Options(ticker, date)
     if df.empty:
         raise ValueError('The dataframe containing relevant options to trade should not be empty')
-    total_premium_collected = sum(df['best_bid'])
+    total_premium_collected = round(sum(df['best_bid']),2)
+    total_premium_list.append(total_premium_collected)
     def permno_info(ticker) -> pd.DataFrame:
         target_ticker = ticker
         permno_query = f"""select permno, ticker, comnam, namedt 
@@ -41,29 +44,31 @@ def PnL_of(ticker = 'SPY', date = test_date):
     call_exp_date = pd.Timestamp(df.loc[0, 'last_trade_date'])
     put_exp_date = pd.Timestamp(df.loc[1, 'last_trade_date'])
 
-    open_date_closing_price = daily_closing_price('SPY', date)
-    closing_price_at_open_list.append(open_date_closing_price) 
-    closing_price_for_call_payout = daily_closing_price(ticker, call_exp_date)
-    closing_price_for_put_payout = daily_closing_price(ticker, put_exp_date)
-    if (closing_price_for_call_payout!=closing_price_for_put_payout):
+    underlying_closing_price_at_open_date = daily_closing_price('SPY', date)
+    underlying_closing_price_at_open_list.append(underlying_closing_price_at_open_date) 
+    underlying_closing_price_for_call_payout = daily_closing_price(ticker, call_exp_date)
+    underlying_closing_price_for_put_payout = daily_closing_price(ticker, put_exp_date)
+    if (underlying_closing_price_for_call_payout!=underlying_closing_price_for_put_payout):
         raise ValueError("Same exp for put and call => same closing price of SPY for both")
-    closing_price_at_exp_list.append(closing_price_for_call_payout)
+    underlying_closing_price_at_exp_list.append(underlying_closing_price_for_call_payout)
     exp_call_strike = df.loc[0,'strike_price']
     call_strike_list.append(exp_call_strike)
     exp_put_strike = df.loc[1,'strike_price']
     put_strike_list.append(exp_put_strike)
   
-    call_payout = max(0, round((closing_price_for_call_payout - exp_call_strike),2))
-    put_payout = max(0, round((exp_put_strike - closing_price_for_put_payout),2))
-
+    call_payout = max(0, round((underlying_closing_price_for_call_payout - exp_call_strike),2))
+    put_payout = max(0, round((exp_put_strike - underlying_closing_price_for_put_payout),2))
+    total_payout = call_payout + put_payout
+    total_payout_list.append(total_payout)
     total_profit = round((total_premium_collected - call_payout - put_payout),2) 
     total_profit_list.append(total_profit)   
     #
     """
-    
     print("\n The closing prices for call_payout and put_payout are: \n")
-    print([float(SPY_closing_price_for_call_payout), float(SPY_closing_price_for_put_payout)])
-
+    print([float(underlying_closing_price_for_call_payout), float(underlying_closing_price_for_put_payout)])
+    print(f"Underlying at Open ({df.loc[0, 'date']}): {underlying_closing_price_at_open_date}\n")
+    if (underlying_closing_price_for_call_payout == underlying_closing_price_for_put_payout):
+        print(f"Underlying at Close ({df.loc[0, 'last_trade_date']}): {underlying_closing_price_for_call_payout}")
     print(f'\n{df}')
     print(f'\n Total premium collected: {total_premium_collected}')
     print(f'\n Call Payout : {call_payout}')
@@ -73,4 +78,4 @@ def PnL_of(ticker = 'SPY', date = test_date):
     #
     return total_profit
 if __name__ == "__main__":
-    print(PnL_of())
+    PnL_of()
