@@ -8,7 +8,8 @@ db = wrds.Connection()
 if __name__ == "__main__":
     pd.set_option('display.min_rows', 400)
 valid_trading_dates = set(pd.to_datetime(pd.read_csv("/Users/pustak/Desktop/Volmageddon/Local_Data/dinstinct_trading_dates.csv")['Dates']))
-test_date = pd.Timestamp(2012,1,7)
+test_date = pd.Timestamp(2014,3,3)
+list_of_relevant_valid_expiration_dates = list()
 #I have given the function - for SPY it works, and it will mostly work for other companies
 # as well, but always better to have one glance at the entire dataframe (row not limited to 1)
 # to understand it, better to take a look at the output of secid_info function first just for assurance
@@ -66,7 +67,7 @@ def Rel_Option_Chain(ticker: str , date: pd.Timestamp) -> pd.DataFrame:
     target_date = date
     relevant_year = date.year
     required_options = pd.DataFrame()
-    print("\n Finding the most feasible option expiration date to short ... ")
+    print(f"\n Finding the most feasible option expiration date to short for {target_date.date()} ... ")
     secid_query = f"""
         select secid, cusip, effect_date, issuer, issue
         from optionm.secnmd
@@ -85,19 +86,21 @@ def Rel_Option_Chain(ticker: str , date: pd.Timestamp) -> pd.DataFrame:
     best_exdate_info = db.raw_sql(best_exdate_query)
     if not best_exdate_info.empty:
         best_exdate = pd.Timestamp(best_exdate_info['exdate'].iloc[0])
-        display_best_date = best_exdate - pd.Timedelta(days = 1) if best_exdate.weekday() == 5 else best_exdate
+        display_best_date = best_exdate
+        while display_best_date not in valid_trading_dates:
+            display_best_date = display_best_date - pd.Timedelta(days=1)
+        list_of_relevant_valid_expiration_dates.append(display_best_date)
         print(f"\n The best valid expiration date seems to be {display_best_date.date()}")
         print(f"\n Retrieving the option chain data for {ticker} on {target_date.date()}({weekday_dict[target_date.weekday()]}) with expiration day on {display_best_date.date()}({weekday_dict[display_best_date.weekday()]}) , it may take some seconds .. ")
         required_options_query = f"""
-        select secid, date, exdate, 
-        case when extract(dow from exdate) = 6 then exdate - interval '1 day' else exdate
-        end as last_trade_date,
+        select secid, date, exdate, date '{display_best_date}' as last_trade_date,
         cp_flag, strike_price/1000 as strike_price, best_bid, best_offer, volume, impl_volatility, delta, gamma, vega, theta
         from optionm.opprcd{relevant_year}
         where secid = {underlying_secid} and date = '{target_date}' and exdate = '{best_exdate}'
         """
         required_options = db.raw_sql(required_options_query)
         required_options = required_options[required_options['impl_volatility'].notna()]
+        print("-" * 100)
     else:
         print(f"\n Opps! Given Date : {target_date.date()}({weekday_dict[target_date.weekday()]}) seems not to be a valid trading day, here is the information for the next valid day:")
     return required_options
