@@ -48,12 +48,15 @@ def give_KPIs(period, yahoo_data, unit_equity_curve):
         annual_vol = Calculate_Annualized_Volatility(period)
         expected_return = Calculate_CAGR(period)
         daily_excess_return = unit_equity_curve.loc[period_begin_date:period_end_date, 'Daily PnL(%)'] - (USTY3MO.loc[period_begin_date:period_end_date, 'Rates'] / 252)
+        # we can de-annualize it using the compounding method as well, but the difference is negligible for daily returns.
+        # so we will use the simple method here
         # Note that we need to subtract daily return of SVXY with daily return of USTY3MO
         #The rates in USTY3MO are different annualized yields for different days
         daily_excess_return.iloc[0] = np.nan
         #Daily Return of SVXY Long for 1st day - doesn't exist , so doens't make sense
         # -- to have excess return for that day
         annualized_excess_return = daily_excess_return.mean() * 252
+        #general convention is to use 252 trading days in a year
         sharpe = annualized_excess_return/annual_vol
         return sharpe
     def Calculate_Max_Drawdown(period):
@@ -71,6 +74,8 @@ def give_KPIs(period, yahoo_data, unit_equity_curve):
     KPIs['Skewness'] = Calculate_Skewness(period)
     return KPIs
 
+#Separate function for Volmageddon KPIs
+# - since it is a short event and we don't need annualized KPIs
 def give_Volmageddon_KPIs(yahoo_data, unit_equity_curve, period = "Volmageddon"):
     if (yahoo_data != SVXY_data and yahoo_data!= SPY_data) or (unit_equity_curve!= SVXY_Unit_Equity_Curve or unit_equity_curve!= SPY_Unit_Equity_Curve):
         raise KeyError ('Data not accessible')

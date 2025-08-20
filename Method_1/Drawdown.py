@@ -64,4 +64,4 @@ def Plot_Drawdown_SVXY_vs_SPY():
 Plot_SVXY_Drawdown = partial(Plot_Drawdown, data = SVXY_data)
 Plot_SPY_Drawdown = partial(Plot_Drawdown, data = SPY_data)
 if __name__ == "__main__":
-   Plot_Drawdown_SVXY_vs_SPY()
+   Plot_SVXY_Drawdown()
