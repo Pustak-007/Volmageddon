@@ -3,7 +3,7 @@ import random
 import pandas as pd 
 from option_chain_func import Rel_Options, test_date
 date_range = pd.date_range(pd.Timestamp(2012,1,1), pd.Timestamp(2023,8,1))
-test_date =  pd.Timestamp(2020,10,1)#random.choice(date_range)
+test_date =  pd.Timestamp(2012,1,3)#random.choice(date_range)
 db = wrds.Connection()
 underlying_closing_price_at_open_list = list()
 underlying_closing_price_at_exp_list = list()
@@ -63,18 +63,19 @@ def PnL_of(ticker = 'SPY', date = test_date):
     total_profit = round((total_premium_collected - call_payout - put_payout),2) 
     total_profit_list.append(total_profit)   
     #
-    """
+
     print("\n The closing prices for call_payout and put_payout are: \n")
     print([float(underlying_closing_price_for_call_payout), float(underlying_closing_price_for_put_payout)])
     print(f"Underlying at Open ({df.loc[0, 'date']}): {underlying_closing_price_at_open_date}\n")
     if (underlying_closing_price_for_call_payout == underlying_closing_price_for_put_payout):
         print(f"Underlying at Close ({df.loc[0, 'last_trade_date']}): {underlying_closing_price_for_call_payout}")
+    print(f'\n The call and put options with delta closest to 0.25 on {df.loc[0, "date"]} are:\n')
     print(f'\n{df}')
     print(f'\n Total premium collected: {total_premium_collected}')
     print(f'\n Call Payout : {call_payout}')
     print(f'\n Put Payout : {put_payout}')
     print(f'\n Profit : {round(total_profit,2)}')
-    """
+    print(f"\n the relevant date is {df.loc[0, 'date']}")
     #
     return total_profit
 if __name__ == "__main__":

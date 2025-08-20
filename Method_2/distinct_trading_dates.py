@@ -16,3 +16,14 @@ if __name__ == "__main__":
     #print(give_distinct_trading_dates())
     trading_day_series = give_distinct_trading_dates()
     trading_day_series.to_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/dinstinct_trading_dates.csv', index = False)
+def give_number_of_trading_days(start = beginning_date, end = end_date):
+    trading_days = give_distinct_trading_dates(start, end)
+    return len(trading_days)    
+if __name__ == "__main__":
+    start_date = pd.Timestamp(2012,1,3)
+    end_date = pd.Timestamp(2012,2,17)
+    test_variable = give_number_of_trading_days(start_date, end_date)
+    print(test_variable)
+    print('-'*100)
+    print(-0.27/test_variable)
+    
