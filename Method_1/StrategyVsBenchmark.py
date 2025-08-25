@@ -60,7 +60,7 @@ def Plot_UnitDollar_SVXYvsSPY_Equity_Curve():
     plt.show()
 
 if __name__ == "__main__":
-    Plot_UnitDollar_SVXYvsSPY_Equity_Curve()
+    print(Create_UnitDollar_Equity_Curve(data = SVXY_data))
     #print(Create_UnitDollar_SVXY_Equity_Curve()['Equity'].iloc[-1])
 
 

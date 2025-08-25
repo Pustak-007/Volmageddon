@@ -86,12 +86,12 @@ def give_Volmageddon_KPIs(yahoo_data, unit_equity_curve, period = "Volmageddon")
     def calculate_total_return():
         end_value = yahoo_data.loc[period_end_date, ('Close', 'SVXY')]
         begin_value = yahoo_data.loc[period_begin_date, ('Close', 'SVXY')]
-        total_return_in_pct = (end_value - begin_value)/begin_value * 100
-        return total_return_in_pct
+        total_return_pct = (end_value - begin_value)/begin_value * 100
+        return total_return_pct
     def calculate_daily_volatility():
         daily_volatility = unit_equity_curve.loc[period_begin_date:period_end_date,'Daily PnL(%)'].std()
         return daily_volatility
-    def calculate_maximum_drawdown():
+    def calculate_max_drawdown():
         my_data = yahoo_data.loc[period_begin_date:period_end_date]
         max_drawdown_pct = Calculate_Max_Drawdown_Pct(data = my_data)
         return max_drawdown_pct
@@ -99,7 +99,7 @@ def give_Volmageddon_KPIs(yahoo_data, unit_equity_curve, period = "Volmageddon")
     KPIs.index = ['Volmageddon']
     KPIs['Cumulative Return (%)'] = calculate_total_return()
     KPIs['Daily Volatility (%)'] = calculate_daily_volatility()
-    KPIs['Maximmum Drawdown(%)'] = calculate_maximum_drawdown()
+    KPIs['Maximmum Drawdown(%)'] = calculate_max_drawdown()
     return KPIs
 
 if __name__ == "__main__":
