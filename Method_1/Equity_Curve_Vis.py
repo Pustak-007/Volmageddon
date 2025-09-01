@@ -1,0 +1,94 @@
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt 
+from matplotlib.ticker import FixedFormatter, FixedLocator, NullLocator
+import matplotlib.dates as mdates
+from functools import partial
+
+#Equity Curve Data
+SVXY_Unit_Equity_Curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SVXY Unit Equity Curve Data.csv')
+SPY_Unit_Equity_Curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SPY Unit Equity Curve Data.csv')
+
+#Unit Equity Curve Data
+SPY_Equity_Curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SPY Equity Curve Data.csv')
+SVXY_Equity_Curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SVXY Equity Curve Data.csv')
+
+def plot_unit_equity_curve(ticker):
+    df = pd.read_csv(f'/Users/pustak/Desktop/Volmageddon/Local_Data/{ticker} Unit Equity Curve Data.csv', parse_dates=['date'])
+    x = df['date']
+    y = df['equity']
+    fig, ax = plt.subplots(figsize = (16,8), dpi = 100)
+    my_label = 'SPY (ETF) Benchmark' if ticker == 'SPY' else 'SVXY ETF'
+    my_color = 'purple' if ticker == 'SPY' else 'blue'
+    ax.plot(x,y, label = my_label , color = my_color)
+    ax.grid(True, alpha = 0.3)
+    ax.set_xlabel("Date", fontsize = 14)
+    ax.set_ylabel("Equity Value", fontsize = 14)
+    ax.set_yscale('log')
+
+    #manual_y_ticks
+    if ticker == 'SPY':
+        y_ticks = [1,2,3,4]
+        ax.yaxis.set_major_locator(FixedLocator(y_ticks))
+        ax.yaxis.set_major_formatter(FixedFormatter(y_ticks))
+        ax.yaxis.set_minor_locator(NullLocator())
+    if ticker == 'SVXY':
+        y_ticks = [1,2,5,10,15,20,25]
+        ax.yaxis.set_major_locator(FixedLocator(y_ticks))
+        ax.yaxis.set_major_formatter(FixedFormatter(y_ticks))
+        ax.yaxis.set_minor_locator(NullLocator())    
+    # X-axis formatting
+    ax.xaxis.set_major_locator(mdates.YearLocator(1))
+    ax.xaxis.set_minor_locator(mdates.MonthLocator(interval=2))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+    ax.axhline(y = 1, color = 'gray', linestyle = ':')
+        #Breakeven Pointer
+    ax.annotate("Breakeven Point", xy = (pd.Timestamp(2022,12,1), 1),
+                xytext = (pd.Timestamp(2022,12,1), 1.4), fontsize = 12, color = 'black',
+                ha = 'center', arrowprops=dict(facecolor = 'gray', arrowstyle = '-|>'))
+    ax.legend()
+    plt.title(f"{ticker} Unit Equity Curve (Log Scale)", fontsize = 16, fontweight = "bold")
+    plt.show()
+
+#plot benchmark vs svxy strategy unit equity curve    
+def plot_SPYvsSVXY_Unit_Equity_Curve():
+    spy_unit_equity = pd.read_csv( '/Users/pustak/Desktop/Volmageddon/Local_Data/SPY Unit Equity Curve Data.csv', parse_dates=['date'])
+    svxy_unit_equity = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SVXY Unit Equity Curve Data.csv', parse_dates=['date'])
+    x1 = svxy_unit_equity['date']
+    y1 = svxy_unit_equity['equity']
+    x2 = spy_unit_equity['date']
+    y2 = spy_unit_equity['equity']
+    fig, ax = plt.subplots(figsize = (16,8), dpi = 100)
+    ax.plot(x1,y1, label = "SVXY (Strategy)", color = 'blue')
+    ax.plot(x2,y2, label = "SPY (Benchmark)", color = 'purple')
+    ax.grid(True, alpha = 0.3)
+    ax.set_xlabel("Date", fontsize = 14)
+    ax.set_ylabel("Equity Value", fontsize = 14)
+    #ax.axvline(pd.Timestamp(2018,1,31), color = 'g', linestyle = '--')
+    ax.set_yscale('log')
+
+    #manual y_ticks
+    y_ticks = [1,2,5,10,15,20,25]
+    ax.yaxis.set_major_locator(FixedLocator(y_ticks))
+    ax.yaxis.set_major_formatter(FixedFormatter(y_ticks))
+    ax.yaxis.set_minor_locator(NullLocator())
+    
+    # X-axis formatting
+    ax.xaxis.set_major_locator(mdates.YearLocator(1))
+    ax.xaxis.set_minor_locator(mdates.MonthLocator(interval=2))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+    ax.axhline(y = 1, color = 'gray', linestyle = ':')
+
+    #Breakeven Pointer
+    ax.annotate("Breakeven Point", xy = (pd.Timestamp(2024,1,1), 1),
+                xytext = (pd.Timestamp(2024,1,1), 1.7), fontsize = 12, color = 'black',
+                ha = 'center', arrowprops=dict(facecolor = 'gray', arrowstyle = '-|>'))
+
+    ax.legend()
+    plt.title("SVXY Unit Equity Return vs SPY Unit Equity Return (Log Scale)", fontsize = 16, fontweight = 'bold')
+    plt.show()
+
+plot_SPYvsSVXY_Unit_Equity_Curve()    
+
+
+                                  
