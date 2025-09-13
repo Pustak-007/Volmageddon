@@ -7,10 +7,11 @@ if __name__ == "__main__":
 df = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/Linearized_PnL.csv')
 initial_capital = 10000
 scaling_factor = round(initial_capital / 2313.4)
-new_row = pd.DataFrame({'date' : [pd.Timestamp(2012,1,2)], 
+'''new_row = pd.DataFrame({'date' : [pd.Timestamp(2012,1,2)], 
                         'Daily PnL($)': [0.0], 
                         'Cumulative PnL($)': [0.0],
                         'equity':[initial_capital]})
+'''                     
 #this makes sense because there is technically no relative pnl on the first day
 #equity_curve where profit is scaled by 100 to make it representative of one option contract pair
 # as premium is quoted on a per share basis, and option contracts are typically on 100 shares
@@ -21,7 +22,7 @@ def create_equity_curve():
     # mutliplied by 100 because the linearized pnl dataframe represents the pnl of holding one option - but one standard option contract contains 100 options
     equity_df['Cumulative PnL($)'] = equity_df['Daily PnL($)'].cumsum()
     equity_df['equity'] = initial_capital + equity_df['Daily PnL($)'].cumsum()
-    equity_df = pd.concat([new_row, equity_df], ignore_index=True)
+    #equity_df = pd.concat([new_row, equity_df], ignore_index=True)
     equity_df['Daily PnL(%)'] = (equity_df['equity'].pct_change() * 100).fillna(0)
     equity_df['Cumulative PnL(%)'] = (1 + equity_df['Daily PnL(%)']/100).cumprod() - 1
     equity_df['Cumulative PnL(%)'] = (equity_df['Cumulative PnL(%)']*100).fillna(0)
@@ -108,4 +109,4 @@ if __name__ == "__main__":
         store_equity_curve()
         store_unit_equity_curve()
 
-plot_equity_curve(equity_df)
+#plot_equity_curve(equity_df)

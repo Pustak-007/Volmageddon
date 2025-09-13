@@ -7,8 +7,16 @@ from matplotlib.ticker import FixedFormatter, FixedLocator, NullLocator
 import matplotlib.dates as mdates
 from functools import partial
 if __name__ == "__main__":
-    pd.set_option('display.min_rows', 200)
+    pd.set_option('display.min_rows', 40)
 initial_capital = 1 #Standard practice to make returns comparative and readable
+def Create_Equity_Curve(data):
+    equity_curve = pd.DataFrame(index = data.index)
+    equity_curve['equity'] = data['Close'].ffill()
+    equity_curve['Daily PnL(%)'] = (equity_curve['equity'].pct_change() * 100).fillna(0)
+    equity_curve['Cumulative PnL(%)'] = ((1 + equity_curve['Daily PnL(%)']/100).cumprod() - 1).fillna(0)  
+    equity_curve.index.name = 'date' 
+    return equity_curve
+
 
 #Creation of SVXY Unit Equity Curve Data
 def Create_UnitDollar_Equity_Curve(data):
@@ -59,6 +67,12 @@ def Plot_UnitDollar_SVXYvsSPY_Equity_Curve():
     plt.title("SVXY Unit Equity Return vs SPY Unit Equity Return (Log Scale)", fontsize = 16, fontweight = 'bold')
     plt.show()
 
+
+def Create_UnitDollar_Equity_Curve2(data):
+    equity_curve = pd.DataFrame(index = data.index)
+    data_filled = data['Close'].ffill()
+    equity_curve['Daily PnL(%)'] = (data_filled.pct_change() * 100).fillna(0)
+    return equity_curve
 if __name__ == "__main__":
     print(Create_UnitDollar_Equity_Curve(data = SVXY_data))
     #print(Create_UnitDollar_SVXY_Equity_Curve()['Equity'].iloc[-1])

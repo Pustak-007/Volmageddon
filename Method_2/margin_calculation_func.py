@@ -7,11 +7,8 @@ from Method_2.option_chain_func import Rel_Options
 #see I have created most of the functions used in here in the module one_month_test.py
 #but they appear as helper (inner) functions within a larger outer function - so I can't call them right here
 # - So I am defining those functions here as standalone functions here.
-#for the sake of convenience, I am just letting the program know what the permno of 
-# SPY is, so that the compuation becomes a bit faster
 db = wrds.Connection()
 distinct_trading_dates = set(pd.to_datetime(pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/dinstinct_trading_dates.csv')['Dates']))
-SPY_permno = 84398
 def permno_info(ticker)->pd.DataFrame:
     target_ticker = ticker
     permno_query = f"""select permno, ticker, comnam, namedt 
@@ -24,7 +21,7 @@ def permno_of(ticker):
     from crsp.dsenames where ticker = '{target_ticker}' order by namedt desc"""
     permno_df = db.raw_sql(permno_query)
     return permno_df['permno'].iloc[0]
-
+SPY_permno = permno_of('SPY')
 def give_daily_closing_price(ticker, date):
     if ticker != 'SPY':
         raise ValueError("The permno has been specified for SPY only, you can modify the give_daily_closing_price function in the margin_calculation_test module to make the fucntion more comprehensive")
@@ -70,9 +67,10 @@ def Calculate_margin_of(ticker, date):
         return margin_call + put_premium_value
     else:
         return margin_put + call_premium_value
-initial_margin = Calculate_margin_of('SPY', pd.Timestamp(2012, 1, 3))
+relevant_date = pd.Timestamp(2012,1,3)   
+initial_margin = Calculate_margin_of('SPY', relevant_date)
 if __name__ == "__main__":
-    print(f"Initial margin for SPY on 2012-01-03: {initial_margin}")
+    print(f"Initial margin for SPY on {relevant_date.date()}: {initial_margin}")
 
 #Okay so initial margin for SPY on 2012-01-03 is 2313.4
 

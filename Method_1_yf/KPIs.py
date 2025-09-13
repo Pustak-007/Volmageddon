@@ -15,12 +15,12 @@ def number_of_years(end_date, begin_date):
         raise ValueError ("Make sure you enter end_date first and begin_date second.")
     return ((e_date-b_date).days)/365.25
 
-period_list = {'All' : (pd.Timestamp(2011,10,4), pd.Timestamp(2024,12,31)),
+period_list = {'All' : (pd.Timestamp(2012,1,3), pd.Timestamp(2023,2,17)),
                'Golden Era' : (pd.Timestamp(2011,10,5), pd.Timestamp(2018,1,31)),
                'Volmageddon' : (pd.Timestamp(2018,2,1),pd.Timestamp(2018,2,28)),
                'Post-Volmageddon/Pre-COVID' : (pd.Timestamp(2018,3,1), pd.Timestamp(2020,1,31)),
                'COVID-19':(pd.Timestamp(2020,2,1), pd.Timestamp(2020,4,30)),
-               'Post-COVID': (pd.Timestamp(2020,5,1), pd.Timestamp(2024,12,31))}
+               'Post-COVID': (pd.Timestamp(2020,5,1), pd.Timestamp(2023,2,17))}
 
 def give_KPIs(period, yahoo_data, unit_equity_curve):
     if period not in period_list:
@@ -37,6 +37,9 @@ def give_KPIs(period, yahoo_data, unit_equity_curve):
             end_value = yahoo_data.loc[period_end_date, ('Close', 'SPY')]
             begin_value = yahoo_data.loc[period_begin_date, ('Close', 'SPY')]
         Number_of_years = number_of_years(period_end_date, period_begin_date)
+        print(f"end value = {end_value}")
+        print(f"begin value = {begin_value}")
+        print(f"Number of years = {Number_of_years}")
         CAGR = ((end_value/begin_value) ** (1/Number_of_years) - 1) * 100
         return CAGR
     def Calculate_Annualized_Volatility(period):
@@ -77,15 +80,17 @@ def give_KPIs(period, yahoo_data, unit_equity_curve):
 #Separate function for Volmageddon KPIs
 # - since it is a short event and we don't need annualized KPIs
 def give_Volmageddon_KPIs(yahoo_data, unit_equity_curve, period = "Volmageddon"):
-    if (yahoo_data != SVXY_data and yahoo_data!= SPY_data) or (unit_equity_curve!= SVXY_Unit_Equity_Curve or unit_equity_curve!= SPY_Unit_Equity_Curve):
-        raise KeyError ('Data not accessible')
     period_begin_date = period_list[period][0]
     period_end_date = period_list[period][1]
     #calculate total cumulative return for the event 
     # -likely will be a large negative number close to 100
     def calculate_total_return():
-        end_value = yahoo_data.loc[period_end_date, ('Close', 'SVXY')]
-        begin_value = yahoo_data.loc[period_begin_date, ('Close', 'SVXY')]
+        if yahoo_data.equals(SVXY_data):
+            end_value = yahoo_data.loc[period_end_date, ('Close', 'SVXY')]
+            begin_value = yahoo_data.loc[period_begin_date, ('Close', 'SVXY')]
+        if yahoo_data.equals(SPY_data):
+            end_value = yahoo_data.loc[period_end_date, ('Close', 'SPY')]
+            begin_value = yahoo_data.loc[period_begin_date, ('Close', 'SPY')]
         total_return_pct = (end_value - begin_value)/begin_value * 100
         return total_return_pct
     def calculate_daily_volatility():
@@ -103,9 +108,9 @@ def give_Volmageddon_KPIs(yahoo_data, unit_equity_curve, period = "Volmageddon")
     return KPIs
 
 if __name__ == "__main__":
-    print(give_KPIs(period = 'Volmageddon', yahoo_data=SVXY_data, unit_equity_curve=SVXY_Unit_Equity_Curve))
-    print(give_KPIs(period = 'Volmageddon', yahoo_data=SPY_data, unit_equity_curve=SPY_Unit_Equity_Curve))
- 
+    print(give_KPIs(period = 'All', yahoo_data=SVXY_data, unit_equity_curve=SVXY_Unit_Equity_Curve))
+
+
 
 
 

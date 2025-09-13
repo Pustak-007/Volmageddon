@@ -99,3 +99,4 @@ if __name__ == "__main__":
     print(f"Median recovery period: {np.median(recovery_period_list)}")
     print(f"Average Time Underwater (Drawdown Duration) : {np.mean(underwater_period_list)}")
     print(f"Median Time Underwater (Drawdown Duration) : {np.median(underwater_period_list)}")
+    print(f"Total Completed Drawdowns: {len(recovery_period_list)}")

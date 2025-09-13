@@ -50,5 +50,5 @@ def plot_equity_curve(equity_df):
     ax.legend(fontsize=10)   
     plt.show()
 
-plot_equity_curve(equity_df=equity_df)
+plot_equity_curve(equity_df=unit_equity_df)
 

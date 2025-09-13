@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from functools import partial
 
 spy_equity_curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SPY Equity Curve Data.csv')
 spy_unit_equity_curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SPY Unit Equity Curve Data.csv')
@@ -73,7 +74,8 @@ def analyze_drawdowns_and_recovery(equity_curve = svxy_equity_curve):
 # --- Example Usage ---
 
 #all_events, avg_recovery, median_recovery_period = analyze_drawdowns_and_recovery()
-all_events = analyze_drawdowns_and_recovery()
+all_svxy_events = partial(analyze_drawdowns_and_recovery, svxy_equity_curve)
+all_spy_events = partial(analyze_drawdowns_and_recovery, spy_equity_curve)
 
 #formatting for proper display
 """
@@ -92,18 +94,37 @@ print(f"Found {len(all_events)} completed drawdown events.")
 print(f"The Average Recovery Period is: {avg_recovery:.2f} days")
 print("="*40)
 """
-recovery_period_list = []
-underwater_period_list = []
-for event in all_events:
-    recovery_period_list.append(event['recovery_period_days'])
-    underwater_period_list.append(event['underwater_period_days'])
+svxy_recovery_period_list = []
+svxy_underwater_period_list = []
+for event in all_svxy_events():
+    svxy_recovery_period_list.append(event['recovery_period_days'])
+    svxy_underwater_period_list.append(event['underwater_period_days'])
+
+spy_recovery_period_list = []
+spy_underwater_period_list = []
+for event in all_spy_events():
+    spy_recovery_period_list.append(event['recovery_period_days'])
+    spy_underwater_period_list.append(event['underwater_period_days'])
+
+
+
 
 #print(all_events)
 if __name__ == "__main__":
-    print(f"Recovery Period List: {recovery_period_list}")
-    print(f"Underwater Period List: {underwater_period_list}")
-    print(f"Average recovery period: {np.mean(recovery_period_list)}")
-    print(f"Median recovery period: {np.median(recovery_period_list)}")
-    print(f"Average Time Underwater (Drawdown Duration) : {np.mean(underwater_period_list)}")
-    print(f"Median Time Underwater (Drawdown Duration) : {np.median(underwater_period_list)}")
-    print(f"Total Completed Drawdowns: {len(recovery_period_list)}")
+    print("SVXY Drawdown Data")
+    print(f"Recovery Period List: {svxy_recovery_period_list}")
+    print(f"Underwater Period List: {svxy_underwater_period_list}")
+    print(f"Average recovery period: {np.mean(svxy_recovery_period_list)}")
+    print(f"Median recovery period: {np.median(svxy_recovery_period_list)}")
+    print(f"Average Time Underwater (Drawdown Duration) : {np.mean(svxy_underwater_period_list)}")
+    print(f"Median Time Underwater (Drawdown Duration) : {np.median(svxy_underwater_period_list)}")
+    print(f"Total Completed Drawdowns: {len(svxy_recovery_period_list)}")
+    print('-'*100)
+    print("SPY Drawdown Data")
+    print(f"Recovery Period List: {spy_recovery_period_list}")
+    print(f"Underwater Period List: {spy_underwater_period_list}")
+    print(f"Average recovery period: {np.mean(spy_recovery_period_list)}")
+    print(f"Median recovery period: {np.median(spy_recovery_period_list)}")
+    print(f"Average Time Underwater (Drawdown Duration) : {np.mean(spy_underwater_period_list)}")
+    print(f"Median Time Underwater (Drawdown Duration) : {np.median(spy_underwater_period_list)}")
+    print(f"Total Completed Drawdowns: {len(spy_recovery_period_list)}")

@@ -10,7 +10,7 @@ if __name__ == "__main__":
 ticker = 'SVXY'
 #The two tickers that we are concerned with is SVXY or SPY
 start_date = pd.Timestamp(2012,1,2)
-end_date = pd.Timestamp(2023,2,27)
+end_date = pd.Timestamp(2023,2,17)
 daily_index = pd.date_range(start = start_date, end = end_date)
 def give_permno(target_ticker = ticker):
     permno_query = f"""select permno, ticker, comnam, namedt 
@@ -121,9 +121,7 @@ if __name__ == "__main__":
         store_SPY_unit_equity_curve()
         store_SVXY_unit_equity_curve()
     if press == 2:
-        print(SPY_equity_curve)
-        print('-'*50)
-        print(SPY_unit_equity_curve)
+        print(SVXY_unit_equity_curve)
         
             
 

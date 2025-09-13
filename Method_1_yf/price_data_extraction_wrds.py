@@ -12,7 +12,7 @@ if __name__ == "__main__":
 ticker = 'SVXY'
 #The two tickers that we are concerned with is SVXY or SPY
 start_date = pd.Timestamp(2012,1,2)
-end_date = pd.Timestamp(2023,2,27)
+end_date = pd.Timestamp(2023,2,17)
 daily_index = pd.date_range(start = start_date, end = end_date)
 def give_permno(target_ticker = ticker):
     permno_query = f"""select permno, ticker, comnam, namedt 
@@ -57,29 +57,26 @@ def give_equity_curve(ticker = ticker):
     equity_curve = equity_curve.reset_index()     
     equity_curve['equity'] = equity_curve['equity'].ffill()     
     equity_curve['Daily PnL(%)'] = equity_curve['Daily PnL(%)'].fillna(0)     
-    equity_curve['Cumulative PnL(%)'] = equity_curve['Cumulative PnL(%)'].fillna(0)     
-    
-    if pd.isna(equity_curve.iloc[0]['equity']):         
-        helper_date = equity_curve.iloc[0]['date']
-        temp = equity_curve.iloc[0]['equity']
-        
-        while pd.isna(temp):             
-            helper_date = helper_date - pd.Timedelta(days=1)             
-            helper_query = f"""select date, prc, cfacpr, abs(prc)/cfacpr as adj_price             
-            from crsp.dsf              
-            where date = '{helper_date}' and permno = {permno}"""             
-            helper_df = db.raw_sql(helper_query)             
-            if not helper_df.empty:                 
-                temp = helper_df['adj_price'].iloc[0]              
-        
-        equity_curve.loc[0,'equity'] = temp       
-        #easier to re-calculate the entire series rather than write the code about changing one element specifically
-        # - and this manual practice can lead to another edge case, this change of everything is easier.  
-        equity_curve['Daily PnL(%)'] = (equity_curve['equity'].pct_change() * 100).fillna(0)
-        equity_curve['Cumulative PnL(%)'] = ((1 + equity_curve['Daily PnL(%)']/100).cumprod() - 1) * 100
-        
+    equity_curve['Cumulative PnL(%)'] = equity_curve['Cumulative PnL(%)'].fillna(0)
+    if pd.isna(equity_curve.iloc[0]['equity']):        
+       helper_date = equity_curve.iloc[0]['date']
+       temp = equity_curve.iloc[0]['equity']
+      
+       while pd.isna(temp):            
+           helper_date = helper_date - pd.Timedelta(days=1)            
+           helper_query = f"""select date, prc, cfacpr, abs(prc)/cfacpr as adj_price            
+           from crsp.dsf             
+           where date = '{helper_date}' and permno = {permno}"""            
+           helper_df = db.raw_sql(helper_query)            
+           if not helper_df.empty:                
+               temp = helper_df['adj_price'].iloc[0]             
+      
+       equity_curve.loc[0,'equity'] = temp      
+       #easier to re-calculate the entire series rather than write the code about changing one element specifically
+       # - and this manual practice can lead to another edge case, this change of everything is easier. 
+       equity_curve['Daily PnL(%)'] = (equity_curve['equity'].pct_change() * 100).fillna(0)
+       equity_curve['Cumulative PnL(%)'] = ((1 + equity_curve['Daily PnL(%)']/100).cumprod() - 1) * 100
     return equity_curve
-
 def give_unit_equity_curve(ticker):
     equity_curve = give_equity_curve(ticker)
     initial_capital = 1
@@ -90,7 +87,7 @@ def give_unit_equity_curve(ticker):
     unit_equity_curve['equity'] = initial_capital * unit_equity_curve['Growth Factor'].cumprod()
     unit_equity_curve['Cumulative PnL(%)'] = ((1 + unit_equity_curve['Daily PnL(%)']/100).cumprod() - 1) * 100
     return unit_equity_curve
-
+"""
 
 give_SPY_equity_curve = partial(give_equity_curve, 'SPY')
 give_SVXY_equity_curve = partial(give_equity_curve, 'SVXY')
@@ -114,19 +111,9 @@ def store_SPY_equity_curve():
 def store_SVXY_equity_curve():
     SVXY_equity_curve.to_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SVXY Equity Curve Data.csv')
 
+"""
 if __name__ == "__main__":
-
-    press = 2
-    if press == 1:
-        store_SPY_equity_curve()
-        store_SVXY_equity_curve()
-        store_SPY_unit_equity_curve()
-        store_SVXY_unit_equity_curve()
-    if press == 2:
-        print(SPY_equity_curve)
-        print('-'*50)
-        print(SPY_unit_equity_curve)
-        
+    print(give_equity_curve('SVXY'))
             
 
 

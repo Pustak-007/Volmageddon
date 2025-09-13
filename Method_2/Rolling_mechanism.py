@@ -7,6 +7,7 @@ if __name__ == "__main__":
 from one_month_test import PnL_of
 big_dataframe = pd.DataFrame()
 ticker = 'SPY' 
+#always use the beginning_date and ending_date from the rolling mechanism.
 beginning_date = pd.Timestamp(2012,1,1)
 ending_date = pd.Timestamp(2023,1,10)
 def rolling_mechanism_df(ticker = ticker, beginning_date = beginning_date, ending_date = ending_date):

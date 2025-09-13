@@ -16,11 +16,12 @@ def plot_equity_curve(ticker):
 
     fig, ax = plt.subplots(figsize=(16,8), dpi=100)
     df = pd.read_csv(f'/Users/pustak/Desktop/Volmageddon/Local_Data/{ticker} Equity Curve Data.csv', parse_dates=['date'])
+    initial_equity_val = df.loc[df['date'] == pd.Timestamp(2012,1,2), 'equity'].iloc[0]
     x = df['date']
     y = df['equity']
     ax.plot(x, y, label='SVXY', linewidth=1.5, color='blue')
     ax.set_xlabel('Date', fontsize=14)
-    ax.set_ylabel('Value', fontsize=14)
+    ax.set_ylabel('Equity Value', fontsize=14)
     ax.set_yscale('log')
     # Volmageddon annotation (February 5, 2018)
     volmageddon_pointer_date = pd.Timestamp('2018-02-05')
@@ -55,7 +56,9 @@ def plot_equity_curve(ticker):
     # Setting tick values manually - because logarithmic scale creates visualization
     # problems, better to standardize this practice -- because out of all the ones I have tried,
     # this is the one which works consistently
-    y_ticks = [10, 20, 30, 40, 50, 70, 100, 150, 200]
+    ax.axhline(y = initial_equity_val, color = 'gray', linestyle = ':', label = 'initial equity')
+    
+    y_ticks = [10, initial_equity_val, 20, 30, 40, 50, 70, 100, 150, 200]
     ax.yaxis.set_major_locator(FixedLocator(y_ticks))
     ax.yaxis.set_major_formatter(FixedFormatter(y_ticks))
     ax.yaxis.set_minor_locator(NullLocator())
@@ -68,7 +71,7 @@ def plot_equity_curve(ticker):
     # Grid for better readability
     ax.grid(True, alpha=0.3)
 
-    plt.title('SVXY Index (Log Scale)', fontsize=16, fontweight='bold')
+    plt.title('SVXY Long (Buy & Hold) Strategy Equity Curve (Log Scale)', fontsize=16, fontweight='bold')
     plt.tight_layout()
     plt.legend(fontsize=12)
     plt.show()

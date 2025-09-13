@@ -1,4 +1,5 @@
-#Helped by gemini
+#Helped by gemini 2.5 pro in google AI Studio.
+#chat link: https://aistudio.google.com/prompts/1L5pe4yecfdLS6STyW4Tp9DgVND1JGaNT
 
 from create_equity_curve import unit_equity_df, equity_df
 import pandas as pd

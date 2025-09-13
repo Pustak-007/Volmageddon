@@ -13,11 +13,22 @@ def Calculate_Drawdown(data):
     drawdowns = (data['equity'] - running_max)/running_max * 100
     drawdown_data['Drawdown (%)'] = drawdowns.values
     return drawdown_data
+
+def Calculate_Max_Drawdown_Pct(equity_data):
+    drawdown_data = Calculate_Drawdown(equity_data)
+    return drawdown_data['Drawdown (%)'].min()
+
+
 #def calculate_drawdown_periods():
 #    equity = 
+short_strangle_equity_curve = create_equity_curve()
+short_strangle_unit_equity_curve = create_unit_equity_curve()
 
-equity_drawdown_data = Calculate_Drawdown(create_equity_curve())
-unit_equity_drawdown_data = Calculate_Drawdown(create_unit_equity_curve())
+short_strangle_equity_drawdown_data = Calculate_Drawdown(short_strangle_equity_curve)
+short_strangle_unit_equity_drawdown_data = Calculate_Drawdown(short_strangle_unit_equity_curve)
+
+#Both the equity_drawdown_data and the unit_equity_drawdown_data are going to be exactly the same
+
 
 def plot_drawdown(drawdown_data):
     x = drawdown_data.index
@@ -49,24 +60,18 @@ def plot_drawdown(drawdown_data):
     ax.xaxis.set_minor_locator(mdates.MonthLocator(interval=2))
 
     #addition of statistics boxes:
-    stats_text = f"""Statistics:\n{'-'*50}\nAvg DD: {average_drawdown:.2f}%\nMedian DD: {median_drawdown:.2f}%\nMax DD: {maximum_drawdown:.2f}%\n{'-'*50}\nAvg Recovery Period: {np.mean(recovery_period_list):.2f} days\nMed Recovery Period: {np.median(recovery_period_list):.2f} days\n{'-'*50}\nAvg DD Duration: {np.mean(underwater_period_list):.2f} days\nMed DD Duration: {np.median(underwater_period_list):.2f} days"""
+    stats_text = f"""Statistics:\n{'-'*50}\nAvg DD: {average_drawdown:.2f}%\nMedian DD: {median_drawdown:.2f}%\nMax DD: {maximum_drawdown:.2f}%\n{'-'*50}\nAvg Recovery Period: {np.mean(recovery_period_list):.2f} days\nMed Recovery Period: {np.median(recovery_period_list):.2f} days\n{'-'*50}\nAvg DD Duration: {np.mean(underwater_period_list):.2f} days\nMed DD Duration: {np.median(underwater_period_list):.2f} days\n{'-'*50}\nTotal Completed Drawdowns: {len(recovery_period_list)}"""
     plt.text(pd.Timestamp(2011,8,1), -80, stats_text, bbox = dict(boxstyle = 'round, pad = 0.5', facecolor = 'pink', alpha = 0.4), alpha = 0.9, va = 'center',ha = 'left', fontsize = 8)
     plt.grid(True, alpha=0.3)
     plt.legend()
     plt.show()
 if __name__ == "__main__":
-    my_drawdown = equity_drawdown_data
-    plot_drawdown(my_drawdown)
-    #testing - the following code snippet is not relevant for the overall project
-    large_press = 0
-    if large_press == 1:
-        print(my_drawdown)
-        count = 0
-        press = 1
-        if press == 1:
-            my_drawdown.to_csv("/Users/pustak/Downloads/my_drawdown.csv", index = False)
-        rel_ser = equity_drawdown_data['Drawdown (%)']
-        for i in range(1,len(rel_ser)):
-            if (rel_ser.iloc[i] == 0 and rel_ser.iloc[i-1])!=0:
-                count += 1
-        print(count)
+    press = 1
+    if press == 1: 
+        print(Calculate_Max_Drawdown_Pct(short_strangle_equity_curve))
+        my_drawdown = short_strangle_equity_drawdown_data
+        plot_drawdown(my_drawdown)
+    if press == 2:
+        print(Calculate_Drawdown(short_strangle_unit_equity_curve))
+        print(Calculate_Drawdown(short_strangle_equity_curve))
+        print(create_unit_equity_curve())

@@ -6,7 +6,7 @@ from SPY_data import SPY_data
 from matplotlib.ticker import PercentFormatter
 from functools import partial
 if __name__ == "__main__":
-   pd.set_option('display.min_rows', 200)
+  pd.set_option('display.min_rows', 200)
 
 #This function gives us the different values of drawdowns for different day
 def Calculate_Drawdown(data):
