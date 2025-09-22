@@ -22,8 +22,8 @@ def plot_unit_equity_curve(ticker):
     my_color = 'purple' if ticker == 'SPY' else 'blue'
     ax.plot(x,y, label = my_label , color = my_color)
     ax.grid(True, alpha = 0.3)
-    ax.set_xlabel("Date", fontsize = 14)
-    ax.set_ylabel("Equity Value", fontsize = 14)
+    ax.set_xlabel("Date", fontsize = 14, fontweight = 'bold')
+    ax.set_ylabel("Equity Value ($)", fontsize = 14, fontweight = 'bold')
     ax.set_yscale('log')
 
     #manual_y_ticks
@@ -93,8 +93,8 @@ def plot_SPYvsSVXY_Unit_Equity_Curve():
     ax.plot(x1,y1, label = "SVXY (Strategy)", color = 'blue')
     ax.plot(x2,y2, label = "SPY (Benchmark)", color = 'purple')
     ax.grid(True, alpha = 0.3)
-    ax.set_xlabel("Date", fontsize = 14)
-    ax.set_ylabel("Equity Value", fontsize = 14)
+    ax.set_xlabel("Date", fontsize = 14, fontweight = 'bold')
+    ax.set_ylabel("Equity Value($)", fontsize = 14, fontweight = 'bold')
     #ax.axvline(pd.Timestamp(2018,1,31), color = 'g', linestyle = '--')
     ax.set_yscale('log')
     ax.axhline(y = 1, color = 'gray', linestyle = ':', label = 'Base Capital')
@@ -117,7 +117,7 @@ def plot_SPYvsSVXY_Unit_Equity_Curve():
                 ha = 'center', arrowprops=dict(facecolor = 'gray', arrowstyle = '-|>'))
 
     ax.legend()
-    plt.title("SVXY Unit Equity Return vs SPY Unit Equity Return (Log Scale)", fontsize = 16, fontweight = 'bold')
+    plt.title("SVXY Unit Equity Curve vs SPY Unit Equity Curve (Log Scale)", fontsize = 16, fontweight = 'bold')
     plt.show()
 
 def plot_Method1vsMethod2_curve():
@@ -131,8 +131,8 @@ def plot_Method1vsMethod2_curve():
     ax.plot(x1,y1, label = "SVXY (Strategy)", color = 'blue')
     ax.plot(x2,y2, label = "SPY (Benchmark)", color = 'purple')
     ax.grid(True, alpha = 0.3)
-    ax.set_xlabel("Date", fontsize = 14)
-    ax.set_ylabel("Equity Value", fontsize = 14)
+    ax.set_xlabel("Date", fontsize = 14, fontweight = 'bold')
+    ax.set_ylabel("Equity Value ($)", fontsize = 14, fontweight = 'bold')
     #ax.axvline(pd.Timestamp(2018,1,31), color = 'g', linestyle = '--')
     ax.set_yscale('log')
 
@@ -157,8 +157,5 @@ def plot_Method1vsMethod2_curve():
     plt.title("SVXY Unit Equity Return vs SPY Unit Equity Return (Log Scale)", fontsize = 16, fontweight = 'bold')
     plt.show()
 
-
-plot_SPYvsSVXY_Unit_Equity_Curve()
-
-
+plot_unit_equity_curve("SVXY")
                                   

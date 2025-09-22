@@ -1,6 +1,3 @@
-#⚠️⚠️This module is suitable for unit testing but not suitable for
-# -- incorporating into the backtest - primarily due to the number of text messages involved.
-
 
 #Think of last_trade_date as the actual expiration date and exdate as the legal expiration date
 import wrds

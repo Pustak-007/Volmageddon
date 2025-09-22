@@ -32,8 +32,8 @@ def give_QQ(csv_path):
     ax_qq.scatter(osm, osr, s=15, alpha=0.6, label="Sample Quantiles")
     ax_qq.plot(osm, slope * osm + intercept, 'r--', lw=2, label="Normal Line")
     ax_qq.set_title("Short Strangle Strategy Distribution Q-Q Plot", fontweight='bold', fontsize=14)
-    ax_qq.set_xlabel("Theoretical Quantiles")
-    ax_qq.set_ylabel("Sample Quantiles")
+    ax_qq.set_xlabel("Theoretical Quantiles", fontweight = 'bold', fontsize = 12)
+    ax_qq.set_ylabel("Sample Quantiles", fontweight = 'bold', fontsize = 12)
     ax_qq.legend()
     ax_qq.grid(alpha=0.3)
 
@@ -42,8 +42,8 @@ def give_QQ(csv_path):
     ax_nqq.scatter(osm, osr, s=15, alpha=0.6, label="Normal Sample Quantiles")
     ax_nqq.plot(osm, slope * osm + intercept, 'r--', lw=2, label="Normal Line")
     ax_nqq.set_title("Normal Q-Q Plot", fontweight='bold', fontsize=14)
-    ax_nqq.set_xlabel("Theoretical Quantiles")
-    ax_nqq.set_ylabel("Sample Quantiles")
+    ax_nqq.set_xlabel("Theoretical Quantiles", fontweight = 'bold', fontsize = 12)
+    ax_nqq.set_ylabel("Sample Quantiles", fontweight = 'bold', fontsize = 12)
     ax_nqq.legend()
     ax_nqq.grid(alpha=0.3)
 

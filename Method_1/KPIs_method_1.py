@@ -50,16 +50,18 @@ def give_KPIs(period, unit_equity_curve):
         while period_end_date not in distinct_valid_trading_days:
             period_end_date = period_end_date - pd.Timedelta(days = 1)
             #we don't want the period_end_date to go after the regime end date
-        print(f"Old Period Begin Date: {old_period_begin_date}")
-        print(f"New Period Begin Date: {period_begin_date}")
-        print(f"Old Period End Date: {old_period_end_date}")
-        print(f"New Period End Date: {period_end_date}")
-    #I know it is better to implement the rolling mechanism - but it seems that none of the demarcation dates are problematic for this program - so I guess I can just let it be
-    #Still - not a good practice - will change it later
+        print(f"Old Period Begin Date: {old_period_begin_date.date()}")
+        print(f"New Period Begin Date: {period_begin_date.date()}")
+        print(f"Old Period End Date: {old_period_end_date.date()}")
+        print(f"New Period End Date: {period_end_date.date()}")
     range_mask = (unit_equity_curve['date'] >= period_begin_date) & (unit_equity_curve['date'] <= period_end_date)
     def Calculate_CAGR(period):
         end_value = unit_equity_curve.loc[unit_equity_curve['date'] == period_end_date, 'equity'].iloc[0]
         begin_value = unit_equity_curve.loc[unit_equity_curve['date'] == period_begin_date, 'equity'].iloc[0]
+        if period_begin_date == pd.Timestamp(2012,1,3): #this also implies the period chosen is "All"
+            begin_value = 1
+        if end_value<=0 or begin_value <= 0:
+            raise ValueError("Equity Values can't be negative or zero.")
         print(f"end value = {end_value}")
         print(f"begin value = {begin_value}")
         Number_of_years = number_of_years(period_end_date, period_begin_date)
@@ -67,11 +69,12 @@ def give_KPIs(period, unit_equity_curve):
         CAGR = ((end_value/begin_value) ** (1/Number_of_years) - 1) * 100
         return CAGR
     def Calculate_Annualized_Volatility(period):
-        daily_volatility = unit_equity_curve.loc[range_mask,'Daily PnL(%)'].std()
+        daily_returns_ser = unit_equity_curve.loc[range_mask, 'Daily PnL(%)']
+        daily_returns_ser = daily_returns_ser[daily_returns_ser!=0]
+        daily_volatility = daily_returns_ser.std()
         trading_days_per_year = 252 #Standard Convention
         annualized_volatility = daily_volatility * np.sqrt(trading_days_per_year)
-        return annualized_volatility
-    
+        return annualized_volatility 
     #Note that sharpe_ratio is generally given in annualized terms - so sharpe_ratio 
     # is the same as annualized_sharpe
     def Calculate_Sharpe_Ratio(period):
@@ -85,7 +88,7 @@ def give_KPIs(period, unit_equity_curve):
         daily_returns = unit_equity_curve['Daily PnL(%)'].loc[range_mask].copy()
         daily_excess_returns = daily_returns - daily_risk_free_rate
         average_daily_excess_return = daily_excess_returns.mean()
-        daily_sharpe = average_daily_excess_return/daily_returns.std()
+        daily_sharpe = average_daily_excess_return/daily_excess_returns.std()
         annualized_sharpe = daily_sharpe * np.sqrt(252)
         return annualized_sharpe
     def Calculate_Max_Drawdown(period):
@@ -117,7 +120,9 @@ def give_Volmageddon_KPIs(unit_equity_curve, period = "Volmageddon"):
         total_return_pct = (end_value - begin_value)/begin_value * 100
         return total_return_pct
     def calculate_daily_volatility():
-        daily_volatility = unit_equity_curve.loc[range_mask,'Daily PnL(%)'].std()
+        daily_returns_ser = unit_equity_curve.loc[range_mask,'Daily PnL(%)']
+        daily_returns_ser = daily_returns_ser[daily_returns_ser!=0]
+        daily_volatility = daily_returns_ser.std()
         return daily_volatility
     def calculate_max_drawdown():
         rel_data = unit_equity_curve[range_mask]
@@ -136,8 +141,5 @@ if __name__ == "__main__":
    #print(give_KPIs(period = 'Golden Era', unit_equity_curve=svxy_unit_equity_curve))
    #print(give_Volmageddon_KPIs(unit_equity_curve=svxy_unit_equity_curve))
    print("SVXY KPIS: ")
-   print(give_KPIs(period = 'All', unit_equity_curve=svxy_unit_equity_curve))
-   print("SPY KPIs: ")
-   print(give_KPIs(period = 'All', unit_equity_curve=spy_unit_equity_curve))
-   
+   print(give_KPIs(period='COVID-19', unit_equity_curve=svxy_unit_equity_curve))
 

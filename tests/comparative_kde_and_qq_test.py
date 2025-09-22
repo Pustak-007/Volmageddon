@@ -1,3 +1,66 @@
+"""
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import statsmodels.api as sm
+
+# Load data
+svxy_unit_equity_curve = pd.read_csv(
+    '/Users/pustak/Desktop/Volmageddon/Local_Data/SVXY Unit Equity Curve Data.csv',
+    parse_dates=['date'], index_col=0
+)
+spy_unit_equity_curve = pd.read_csv(
+    '/Users/pustak/Desktop/Volmageddon/Local_Data/SPY Unit Equity Curve Data.csv',
+    parse_dates=['date'], index_col=0
+)
+ss_strategy_unit_equity_curve = pd.read_csv(
+    '/Users/pustak/Desktop/Volmageddon/Local_Data/Short Strangle Unit Equity Curve Data.csv',
+    parse_dates=['date'], index_col=0
+)
+
+# Refining daily returns to remove 0-returns for weekends
+spy_daily_returns = spy_unit_equity_curve[spy_unit_equity_curve['Daily PnL(%)'] != 0]['Daily PnL(%)']
+svxy_daily_returns = svxy_unit_equity_curve[svxy_unit_equity_curve['Daily PnL(%)'] != 0]['Daily PnL(%)']
+ss_strategy_daily_returns = ss_strategy_unit_equity_curve[ss_strategy_unit_equity_curve['Daily PnL(%)'] != 0]['Daily PnL(%)']
+
+# Create figure with gridspec
+fig = plt.figure(figsize=(18, 8))
+gs = fig.add_gridspec(3, 2, width_ratios=[2, 1])  # left plot wider
+
+# Left: KDE plot (spans all rows)
+ax_kde = fig.add_subplot(gs[:, 0])
+
+sns.kdeplot(spy_daily_returns, label="SPY", linewidth=3, ax=ax_kde)
+sns.kdeplot(svxy_daily_returns, label="SVXY", linewidth=3, ax=ax_kde)
+sns.kdeplot(ss_strategy_daily_returns, label="Short Strangle", linewidth=3, ax=ax_kde)
+
+ax_kde.set_title("KDE Comparison of Daily Returns", fontsize=16, fontweight="bold")
+ax_kde.set_xlabel("Daily Returns (%)", fontsize=12, fontweight="bold")
+ax_kde.set_ylabel("Density", fontsize=12, fontweight="bold")
+ax_kde.grid(alpha=0.3)
+ax_kde.legend()
+
+# Right: 3 QQ plots stacked vertically
+ax_spy = fig.add_subplot(gs[0, 1])
+ax_svxy = fig.add_subplot(gs[1, 1])
+ax_ss = fig.add_subplot(gs[2, 1])
+
+# SPY QQ plot
+sm.qqplot(spy_daily_returns, line='45', ax=ax_spy, color="C0")
+ax_spy.set_title("QQ Plot - SPY", fontsize=12, fontweight="bold")
+
+# SVXY QQ plot
+sm.qqplot(svxy_daily_returns, line='45', ax=ax_svxy, color="C1")
+ax_svxy.set_title("QQ Plot - SVXY", fontsize=12, fontweight="bold")
+
+# Short Strangle QQ plot
+sm.qqplot(ss_strategy_daily_returns, line='45', ax=ax_ss, color="C2")
+ax_ss.set_title("QQ Plot - Short Strangle", fontsize=12, fontweight="bold")
+
+plt.tight_layout()
+plt.show()
+"""
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -62,9 +125,9 @@ ss_strategy_daily_returns = ss_strategy_unit_equity_curve[ss_strategy_unit_equit
 
 fig, ax = plt.subplots(figsize=(16, 8))
 
-sns.kdeplot(spy_daily_returns, label="SPY", lw=3, linestyle = '--', alpha = 0.6, color = 'green')
+sns.kdeplot(spy_daily_returns, label="SPY", lw=3)
 sns.kdeplot(svxy_daily_returns, label="SVXY", lw=3)
-sns.kdeplot(ss_strategy_daily_returns, label="Short Strangle", lw=3, color = 'brown')
+sns.kdeplot(ss_strategy_daily_returns, label="Short Strangle", lw=3)
 
 spy_analysis_text = generate_analysis_text(spy_daily_returns, "SPY")
 ss_analysis_text = generate_analysis_text(ss_strategy_daily_returns, "Short Strangle")

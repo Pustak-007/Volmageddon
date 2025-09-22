@@ -99,8 +99,10 @@ def plot_equity_curve(equity_df):
     ax.legend(fontsize=10)
     plt.show()
 
+
 if __name__ == "__main__":
     print(equity_df)
+    plot_equity_curve(equity_df)
     #yeah - as a means of safe-guard, always make sure to revert the press value back to zero
     # after the relevant data is properly stored.
     press = 0
@@ -108,4 +110,3 @@ if __name__ == "__main__":
         store_equity_curve()
         store_unit_equity_curve()
 
-plot_equity_curve(equity_df)

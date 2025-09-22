@@ -7,7 +7,7 @@ from functools import partial
 svxy_unit_equity_curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SVXY Unit Equity Curve Data.csv', parse_dates=['date'])
 spy_unit_equity_curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SPY Unit Equity Curve Data.csv', parse_dates=['date'])
 from average_recovery_func import svxy_recovery_period_list, svxy_underwater_period_list, spy_recovery_period_list, spy_underwater_period_list
-
+distinct_trading_dates = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/dinstinct_trading_dates.csv', parse_dates=['Dates']).squeeze()
 
 def Calculate_Drawdown(data):
     drawdown_data = pd.DataFrame()
@@ -35,6 +35,10 @@ vol_max_drawdown_val = vol_max_drawdown_df['Drawdown (%)']
 def plot_drawdown(drawdown_data):
     x = drawdown_data.index
     y = drawdown_data['Drawdown (%)']
+    data_copy = drawdown_data
+    def give_distinct_drawdown(dd_data):
+        return dd_data.loc[dd_data.index.isin(distinct_trading_dates)]
+    y_distinct = give_distinct_drawdown(data_copy)['Drawdown (%)']
     fig, ax = plt.subplots(figsize=(16, 8), dpi=100)
 
     ax.plot(x, y, label='Drawdown Curve', color='red', linewidth=2, zorder = 1)
@@ -44,13 +48,13 @@ def plot_drawdown(drawdown_data):
         ax.set_title('Drawdown Curve of SPY ETF', fontsize=16, fontweight='bold')
     if drawdown_data.equals(svxy_drawdown_data):
         ax.set_title('Drawdown Curve of SVXY ETF - Harvesting VRP via longing SVXY', fontsize = 16, fontweight = 'bold')
-    ax.set_xlabel('Date', fontsize=14)
-    ax.set_ylabel('Drawdown (%)', fontsize=14)
+    ax.set_xlabel('Date', fontsize=14, fontweight = 'bold')
+    ax.set_ylabel('Drawdown (%)', fontsize=14, fontweight = 'bold')
     
     y_min = min(y)
     x_min = y.idxmin()
-    average_drawdown = np.mean(y)
-    median_drawdown = np.median(y)
+    average_drawdown = np.mean(y_distinct)
+    median_drawdown = np.median(y_distinct)
     maximum_drawdown = y.min()
     ax.plot(x_min, y_min, 'ro', markersize=6, alpha = 0.8)
     
@@ -203,8 +207,8 @@ def plot_overlay_drawdown(spy_drawdown_data, svxy_drawdown_data):
     ax.fill_between(x_svxy, y_svxy, 0, where=(y_svxy < 0), color='red', alpha=0.2)
     
     ax.set_title('SPY vs SVXY Drawdown Comparison', fontsize=16, fontweight='bold')
-    ax.set_xlabel('Date', fontsize=14)
-    ax.set_ylabel('Drawdown (%)', fontsize=14)
+    ax.set_xlabel('Date', fontsize=14, fontweight = 'bold')
+    ax.set_ylabel('Drawdown (%)', fontsize=14, fontweight = 'bold')
 
     """
     y_min_spy = min(y_spy)
@@ -229,9 +233,9 @@ if __name__ == "__main__":
     plot_spy_drawdown = partial(plot_drawdown, spy_drawdown_data)
     plot_svxy_drawdown = partial(plot_drawdown, svxy_drawdown_data)
 
-    #plot_svxy_drawdown()
-    plot_comparison_drawdown(spy_drawdown_data, svxy_drawdown_data)
+    #plot_spy_drawdown()
+    #plot_comparison_drawdown(spy_drawdown_data, svxy_drawdown_data)
     plot_overlay_drawdown(spy_drawdown_data, svxy_drawdown_data)
     #plot_spy_drawdown()
-
+    #print(type(Calculate_Drawdown(svxy_unit_equity_curve)))
     #print(Calculate_Max_Drawdown_Pct(svxy_unit_equity_curve[(svxy_unit_equity_curve['date']>=pd.Timestamp(2018,1,1)) & (svxy_unit_equity_curve['date']<=pd.Timestamp(2018,2,28))]))

@@ -3,6 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt 
 from matplotlib.ticker import FixedFormatter, FixedLocator, NullLocator
 import matplotlib.dates as mdates
+
+#Though the function is modular enough to accept any ticker with local equity curve data,
+# but the annotations are specifically for SVXY
 def plot_equity_curve(ticker):
 
     """
@@ -20,8 +23,8 @@ def plot_equity_curve(ticker):
     x = df['date']
     y = df['equity']
     ax.plot(x, y, label='SVXY', linewidth=1.5, color='blue')
-    ax.set_xlabel('Date', fontsize=14)
-    ax.set_ylabel('Equity Value', fontsize=14)
+    ax.set_xlabel('Date', fontsize=14, fontweight = 'bold')
+    ax.set_ylabel('Equity Value', fontsize=14, fontweight = 'bold')
     ax.set_yscale('log')
     # Volmageddon annotation (February 5, 2018)
     volmageddon_pointer_date = pd.Timestamp('2018-02-05')

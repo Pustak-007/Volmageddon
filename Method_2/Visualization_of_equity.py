@@ -5,6 +5,9 @@ import pandas as pd
 from create_equity_curve import equity_df, min_equity_val, max_equity_val, unit_equity_df, min_unit_equity_val, max_unit_equity_val
 from matplotlib.ticker import FixedFormatter, FixedLocator, NullLocator
 
+spy_unit_equity_curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/SPY Unit Equity Curve Data.csv', parse_dates=['date'])
+short_strangle_unit_equity_curve = pd.read_csv('/Users/pustak/Desktop/Volmageddon/Local_Data/Short Strangle Unit Equity Curve Data.csv', parse_dates=['date'])
+
 def plot_equity_curve(equity_df):
     y = equity_df['equity']
     x = equity_df['date']
@@ -50,5 +53,5 @@ def plot_equity_curve(equity_df):
     ax.legend(fontsize=10)   
     plt.show()
 
-plot_equity_curve(equity_df=unit_equity_df)
 
+#plot_equity_curve(equity_df=unit_equity_df)

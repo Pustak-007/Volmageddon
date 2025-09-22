@@ -35,8 +35,8 @@ def give_QQ(csv_path):
         ax_qq.set_title("SVXY Long Strategy Distribution Q-Q Plot", fontweight='bold', fontsize=14)
     if csv_path == '/Users/pustak/Desktop/Volmageddon/Local_Data/SPY Unit Equity Curve Data.csv':
         ax_qq.set_title("SPY Long Strategy (Benchmark) Distribution Q-Q Plot", fontweight = 'bold', fontsize = 14)    
-    ax_qq.set_xlabel("Theoretical Quantiles")
-    ax_qq.set_ylabel("Sample Quantiles")
+    ax_qq.set_xlabel("Theoretical Quantiles", fontsize = 12, fontweight = 'bold')
+    ax_qq.set_ylabel("Sample Quantiles", fontsize = 12, fontweight = 'bold')
     ax_qq.legend()
     ax_qq.grid(alpha=0.3)
 
@@ -45,8 +45,8 @@ def give_QQ(csv_path):
     ax_nqq.scatter(osm, osr, s=15, alpha=0.6, label="Normal Sample Quantiles")
     ax_nqq.plot(osm, slope * osm + intercept, 'r--', lw=2, label="Normal Line")
     ax_nqq.set_title("Normal Q-Q Plot", fontweight='bold', fontsize=14)
-    ax_nqq.set_xlabel("Theoretical Quantiles")
-    ax_nqq.set_ylabel("Sample Quantiles")
+    ax_nqq.set_xlabel("Theoretical Quantiles", fontsize = 12, fontweight = 'bold')
+    ax_nqq.set_ylabel("Sample Quantiles", fontsize = 12, fontweight = 'bold')
     ax_nqq.legend()
     ax_nqq.grid(alpha=0.3)
 

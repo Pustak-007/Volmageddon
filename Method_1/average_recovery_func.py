@@ -128,3 +128,4 @@ if __name__ == "__main__":
     print(f"Average Time Underwater (Drawdown Duration) : {np.mean(spy_underwater_period_list)}")
     print(f"Median Time Underwater (Drawdown Duration) : {np.median(spy_underwater_period_list)}")
     print(f"Total Completed Drawdowns: {len(spy_recovery_period_list)}")
+    print(svxy_equity_curve)

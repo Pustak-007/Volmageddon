@@ -25,7 +25,7 @@ USTY3MO['date'] = USTY3MO.index
 USTY3MO.reset_index(drop=True, inplace=True)
 new_column_name_order = ['date', 'Rates']
 USTY3MO = USTY3MO[new_column_name_order]
-print(USTY3MO)
+#print(USTY3MO)
 if __name__ == "__main__":
     press = 0
     if press == 1:

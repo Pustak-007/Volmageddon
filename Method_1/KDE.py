@@ -261,9 +261,9 @@ Kurtosis: {kurt:.3f}
     if 'SVXY' in csv_path:
         ax_kde.set_title('KDE Plot - Daily Returns of Harvesting VRP via Long SVXY', fontweight = 'bold', fontsize = 14)
     elif 'SPY' in csv_path:
-        ax_kde.set_title('KDE Plot - Daily Returns of SPY Long & Hold (Benchmark Strategy)')
-    ax_kde.set_ylabel('Probability Density')
-    ax_kde.set_xlabel('Daily Returns (%)')
+        ax_kde.set_title('KDE Plot - Daily Returns of SPY Long & Hold (Benchmark Strategy)', fontweight = 'bold', fontsize = 14)
+    ax_kde.set_ylabel('Probability Density', fontsize = 12, fontweight = 'bold')
+    ax_kde.set_xlabel('Daily Returns (%)', fontsize = 12, fontweight = 'bold')
     ax_kde.grid(alpha=0.3)
     
     # Force the y-axis to start at 0
