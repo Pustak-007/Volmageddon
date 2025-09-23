@@ -1,4 +1,4 @@
-# Volmageddon 2: An Analysis of Volatility Risk Premium Harvesting Strategies
+# Volmageddon: An Analysis of Volatility Risk Premium Harvesting Strategies
 
 This project conducts a detailed backtest and comparative analysis of two distinct strategies designed to harvest the Volatility Risk Premium (VRP). The analysis spans from early 2012 to early 2023, covering various market regimes including the "Volmageddon" event of February 2018.
 
@@ -16,7 +16,7 @@ The analysis relies on institutional-grade financial data from Wharton Research 
 The project is organized into several key directories:
 
 ```
-Volmageddon 2/
+Volmageddon/
 ├── Method_1/ # Core logic for the Long Short-Volatility ETF using WRDS data.
 ├── Method_2/ # Core logic for the Short Strangle strategy using WRDS data.
 ├── Method_1_yf/ # Preliminary implementation of Method 1 using yfinance for data.
