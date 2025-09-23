@@ -1,6 +1,6 @@
 # Volmageddon: An Analysis of Volatility Risk Premium Harvesting Strategies
 
-This project conducts a detailed backtest and comparative analysis of two distinct strategies designed to harvest the Volatility Risk Premium (VRP). The analysis spans from early 2012 to early 2023, covering various market regimes including the "Volmageddon" event of February 2018.
+This project conducts a detailed backtest and comparative analysis of two distinct strategies designed to harvest the Volatility Risk Premium (VRP). The analysis spans from early 2012 to early 2023, covering various market regimes including the "Volmageddon" event of February 2018 and the COVID-19 crisis.
 
 The two primary methods explored are:
 
