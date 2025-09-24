@@ -140,6 +140,10 @@ if __name__ == "__main__":
    #print(give_KPIs(period = 'All', unit_equity_curve=spy_unit_equity_curve))
    #print(give_KPIs(period = 'Golden Era', unit_equity_curve=svxy_unit_equity_curve))
    #print(give_Volmageddon_KPIs(unit_equity_curve=svxy_unit_equity_curve))
-   print("SVXY KPIS: ")
-   print(give_KPIs(period='COVID-19', unit_equity_curve=svxy_unit_equity_curve))
+   #print("SVXY KPIS: ")
+   #print(give_KPIs(period = 'Post-COVID', unit_equity_curve=svxy_unit_equity_curve))
+   print("SPY KPIs: ")
+   print(give_KPIs(period = 'Golden Era', unit_equity_curve=spy_unit_equity_curve))
+   print("SVXY KPIs: ")
+   print(give_KPIs(period='Golden Era', unit_equity_curve=svxy_unit_equity_curve))
 

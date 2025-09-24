@@ -1,3 +1,7 @@
+#this module is likely the predecessor to the create_equity_curve.py module
+# I was likely testing out if adding a new row at the start mess up any calculation - so just wanted to retain past data
+# so the name imp_test likely in the sense to check if adding/deleting a row will change this important curve
+
 import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt

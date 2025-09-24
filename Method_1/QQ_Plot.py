@@ -5,15 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def give_QQ(csv_path):
-    """
-    Generate Q-Q plot for normality testing of daily returns data.
-    
-    Args:
-        csv_path (str): Path to CSV file containing equity curve data
-        
-    Returns:
-        Just plots the data and then done - doesn't return anything
-    """
     # Load data
     equity_curve = pd.read_csv(csv_path, index_col=0)
     daily_returns_df = equity_curve[equity_curve['Daily PnL(%)'] != 0]

@@ -1,6 +1,3 @@
-#Helped by gemini 2.5 pro in google AI Studio.
-#chat link: https://aistudio.google.com/prompts/1L5pe4yecfdLS6STyW4Tp9DgVND1JGaNT
-
 import pandas as pd
 import numpy as np
 

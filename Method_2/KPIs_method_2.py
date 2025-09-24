@@ -142,6 +142,4 @@ def give_Volmageddon_KPIs(unit_equity_curve, period = "Volmageddon"):
 if __name__ == "__main__":
     print("Short Strangle Strategy KPIs: ")
     #print(give_KPIs(period = 'COVID-19', unit_equity_curve=ss_strategy_unit_equity_curve))
-    print(give_Volmageddon_KPIs(unit_equity_curve=ss_strategy_unit_equity_curve))
-    print("SPY KPIs: ")
-    print(give_Volmageddon_KPIs(unit_equity_curve=benchmark_unit_equity_curve))
+    print(give_KPIs(period = 'Post-COVID', unit_equity_curve=ss_strategy_unit_equity_curve))
